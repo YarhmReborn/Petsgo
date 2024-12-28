@@ -8,7 +8,7 @@ return function(targetPlayerName, amount, comma)
     local formattedAmount = comma(amount)
     local screenGui = game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui
     local tweenService = game:GetService("TweenService")
-    local donationText = targetPlayerName .. " DONATED " .. formattedAmount .. "‚ TO YOU!"
+    local donationText = targetPlayerName .. " DONATED " .. formattedAmount .. " TO YOU!"
     local clone = game:GetService("Players").LocalPlayer.PlayerGui.UITemplates.donationPopup:Clone()
 
     -- Update raised value
