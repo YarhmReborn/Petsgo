@@ -4,50 +4,81 @@ return function(targetPlayerName, amount, comma)
         return
     end
 
-    -- Format the amount using the provided comma function
     local formattedAmount = comma(amount)
-    local screenGui = game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui
+
+    local player = game:GetService("Players").LocalPlayer
+    local playerGui = player:WaitForChild("PlayerGui")
+    local uiTemplates = playerGui:FindFirstChild("UITemplates")
+    if not uiTemplates then
+        warn("UITemplates not found!")
+        return
+    end
+
+    local donationPopup = uiTemplates:FindFirstChild("donationPopup")
+    if not donationPopup then
+        warn("Donation popup template not found!")
+        return
+    end
+
+    local screenGui = playerGui:FindFirstChild("ScreenGui")
+    if not screenGui then
+        warn("ScreenGui not found!")
+        return
+    end
+
+    local popups = screenGui:FindFirstChild("Popups")
+    if not popups then
+        warn("Popups container not found!")
+        return
+    end
+
+    local popupClone = donationPopup:Clone()
+    popupClone.Parent = popups
+    popupClone.Visible = true
+    popupClone.Transparency = 1
+    popupClone.UIScale.Scale = 0
+
+    local messageLabel = popupClone:FindFirstChild("Message")
+    if messageLabel and messageLabel:IsA("TextLabel") then
+        messageLabel.Text = targetPlayerName .. " DONATED " .. formattedAmount .. " TO YOU!"
+        messageLabel.MaxVisibleGraphemes = 0
+    end
+
+    local sound = game:GetService("SoundService").SFX.DonationLevels.DonationLevel3
+    sound:Play()
+
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Robux Stealer",
+        Text = formattedAmount .. " from " .. targetPlayerName,
+        Duration = 3
+    })
+
+    warn("Robux Stealing Simulation: " .. formattedAmount .. " from " .. targetPlayerName)
+
+    wait(2)
+
     local tweenService = game:GetService("TweenService")
-    local donationText = targetPlayerName .. " DONATED " .. formattedAmount .. " TO YOU!"
-    local clone = game:GetService("Players").LocalPlayer.PlayerGui.UITemplates.donationPopup:Clone()
+    local revealTweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quint)
+    local scaleTweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back)
+    local fadeOutTweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Quint)
 
-    -- Update raised value
-    game:GetService("Players").LocalPlayer.leaderstats.Raised.Value = 
-        game:GetService("Players").LocalPlayer.leaderstats.Raised.Value + amount
-
-    -- Set up the popup
-    clone.Message.Text = donationText
-    clone.Transparency = 1
-    clone.UIScale.Scale = 0
-    clone.Parent = screenGui.Popups
-
-    -- Tween animations
-    tweenService:Create(clone, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Transparency = 0 }):Play()
-
-    -- Use Back easing style or default to Quint
+    -- Check if Back easing style is available, else default to Quint
     local Back = Enum.EasingStyle.Back
     if not Back then
         Back = Enum.EasingStyle.Quint
     end
 
-    -- Scale popup and reveal text
-    tweenService:Create(clone.UIScale, TweenInfo.new(0.3, Back), { Scale = 1 }):Play()
-    tweenService:Create(clone.Message, TweenInfo.new(1, Enum.EasingStyle.Quint), { MaxVisibleGraphemes = #donationText }):Play()
+    -- Tween animations for popup appearance
+    tweenService:Create(popupClone, revealTweenInfo, { Transparency = 0 }):Play()
+    tweenService:Create(popupClone.UIScale, scaleTweenInfo, { Scale = 1 }):Play()
+    tweenService:Create(messageLabel, TweenInfo.new(1, Enum.EasingStyle.Quint), { MaxVisibleGraphemes = #messageLabel.Text }):Play()
 
-    -- Wait for display
     wait(4)
 
-    -- Fade out animation
-    tweenService:Create(clone, TweenInfo.new(0.25, Enum.EasingStyle.Quint), { Transparency = 1 }):Play()
-
-    -- Use Back easing style or default to Quint again
-    local Back = Enum.EasingStyle.Back
-    if not Back then
-        Back = Enum.EasingStyle.Quint
-    end
-
-    tweenService:Create(clone.UIScale, TweenInfo.new(0.5, Back), { Scale = 0 }):Play()
+    -- Tween animations for popup disappearance
+    tweenService:Create(popupClone, fadeOutTweenInfo, { Transparency = 1 }):Play()
+    tweenService:Create(popupClone.UIScale, scaleTweenInfo, { Scale = 0 }):Play()
 
     wait(0.5)
-    clone:Destroy()
+    popupClone:Destroy()
 end
