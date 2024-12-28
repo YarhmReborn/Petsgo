@@ -23,14 +23,30 @@ return function(targetPlayerName, amount, comma)
 
     -- Tween animations
     tweenService:Create(clone, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Transparency = 0 }):Play()
-    local easingStyle = Enum.EasingStyle.Back or Enum.EasingStyle.Quint
-    tweenService:Create(clone.UIScale, TweenInfo.new(0.3, easingStyle), { Scale = 1 }):Play()
+
+    -- Use Back easing style or default to Quint
+    local Back = Enum.EasingStyle.Back
+    if not Back then
+        Back = Enum.EasingStyle.Quint
+    end
+
+    -- Scale popup and reveal text
+    tweenService:Create(clone.UIScale, TweenInfo.new(0.3, Back), { Scale = 1 }):Play()
     tweenService:Create(clone.Message, TweenInfo.new(1, Enum.EasingStyle.Quint), { MaxVisibleGraphemes = #donationText }):Play()
 
+    -- Wait for display
     wait(4)
 
+    -- Fade out animation
     tweenService:Create(clone, TweenInfo.new(0.25, Enum.EasingStyle.Quint), { Transparency = 1 }):Play()
-    tweenService:Create(clone.UIScale, TweenInfo.new(0.5, easingStyle), { Scale = 0 }):Play()
+
+    -- Use Back easing style or default to Quint again
+    local Back = Enum.EasingStyle.Back
+    if not Back then
+        Back = Enum.EasingStyle.Quint
+    end
+
+    tweenService:Create(clone.UIScale, TweenInfo.new(0.5, Back), { Scale = 0 }):Play()
 
     wait(0.5)
     clone:Destroy()
