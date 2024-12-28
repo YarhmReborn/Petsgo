@@ -4,63 +4,34 @@ return function(targetPlayerName, amount, comma)
         return
     end
 
+    -- Format the amount using the provided comma function
     local formattedAmount = comma(amount)
+    local screenGui = game:GetService("Players").LocalPlayer.PlayerGui.ScreenGui
+    local tweenService = game:GetService("TweenService")
+    local donationText = targetPlayerName .. " DONATED " .. formattedAmount .. "‚ TO YOU!"
+    local clone = game:GetService("Players").LocalPlayer.PlayerGui.UITemplates.donationPopup:Clone()
 
-    local player = game:GetService("Players").LocalPlayer
-    local playerGui = player:WaitForChild("PlayerGui")
-    local uiTemplates = playerGui:FindFirstChild("UITemplates")
-    if not uiTemplates then
-        warn("UITemplates not found!")
-        return
-    end
+    -- Update raised value
+    game:GetService("Players").LocalPlayer.leaderstats.Raised.Value = 
+        game:GetService("Players").LocalPlayer.leaderstats.Raised.Value + amount
 
-    local donationPopup = uiTemplates:FindFirstChild("donationPopup")
-    if not donationPopup then
-        warn("Donation popup template not found!")
-        return
-    end
-
-    local screenGui = playerGui:FindFirstChild("ScreenGui")
-    if not screenGui then
-        warn("ScreenGui not found!")
-        return
-    end
-
-    local popups = screenGui:FindFirstChild("Popups")
-    if not popups then
-        warn("Popups container not found!")
-        return
-    end
-
-    local popupClone = donationPopup:Clone()
-    popupClone.Parent = popups
-
-    -- Message and animation setup
-    local donationText = targetPlayerName .. " DONATED " .. formattedAmount .. " TO YOU!"
-    local messageLabel = popupClone:FindFirstChild("Message")
-
-    if messageLabel and messageLabel:IsA("TextLabel") then
-        messageLabel.Text = donationText
-    end
-
-    popupClone.Transparency = 1
-    local uiScale = Instance.new("UIScale", popupClone)
-    uiScale.Scale = 0
+    -- Set up the popup
+    clone.Message.Text = donationText
+    clone.Transparency = 1
+    clone.UIScale.Scale = 0
+    clone.Parent = screenGui.Popups
 
     -- Tween animations
-    local tweenService = game:GetService("TweenService")
-    tweenService:Create(popupClone, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Transparency = 0 }):Play()
-    tweenService:Create(uiScale, TweenInfo.new(0.3, Enum.EasingStyle.Back), { Scale = 1 }):Play()
-
-    if messageLabel then
-        tweenService:Create(messageLabel, TweenInfo.new(1, Enum.EasingStyle.Quint), { MaxVisibleGraphemes = #donationText }):Play()
-    end
+    tweenService:Create(clone, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Transparency = 0 }):Play()
+    local easingStyle = Enum.EasingStyle.Back or Enum.EasingStyle.Quint
+    tweenService:Create(clone.UIScale, TweenInfo.new(0.3, easingStyle), { Scale = 1 }):Play()
+    tweenService:Create(clone.Message, TweenInfo.new(1, Enum.EasingStyle.Quint), { MaxVisibleGraphemes = #donationText }):Play()
 
     wait(4)
 
-    tweenService:Create(popupClone, TweenInfo.new(0.25, Enum.EasingStyle.Quint), { Transparency = 1 }):Play()
-    tweenService:Create(uiScale, TweenInfo.new(0.5, Enum.EasingStyle.Back), { Scale = 0 }):Play()
+    tweenService:Create(clone, TweenInfo.new(0.25, Enum.EasingStyle.Quint), { Transparency = 1 }):Play()
+    tweenService:Create(clone.UIScale, TweenInfo.new(0.5, easingStyle), { Scale = 0 }):Play()
 
     wait(0.5)
-    popupClone:Destroy()
+    clone:Destroy()
 end
