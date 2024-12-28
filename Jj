@@ -68,10 +68,10 @@ return function(targetPlayerName, amount, comma)
     tweenService:Create(popupClone.UIScale, scaleTweenInfo, { Scale = 1 }):Play()
     tweenService:Create(messageLabel, TweenInfo.new(1, Enum.EasingStyle.Quint), { MaxVisibleGraphemes = #messageLabel.Text }):Play()
 
+wait(2)
+
 local sound = game:GetService("SoundService").SFX.DonationLevels.DonationLevel3
     sound:Play()
-  
-wait(2)
 
     -- Tween animations for popup disappearance
     tweenService:Create(popupClone, fadeOutTweenInfo, { Transparency = 1 }):Play()
