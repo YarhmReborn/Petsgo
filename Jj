@@ -44,43 +44,43 @@ return function(targetPlayerName, amount, comma)
     local sound = game:GetService("SoundService").SFX.DonationLevels.DonationLevel3
     sound:Play()
 
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Robux Stealer", 
-        Text = formattedAmount .. " from " .. targetPlayerName,
-        Duration = 3
-    })
-
-    warn("Robux Stealing Simulation: " .. formattedAmount .. " from " .. targetPlayerName)
-
+    -- Animations for transparency and scaling
     local tweenService = game:GetService("TweenService")
-    
-    -- Appearing animation
-    popupClone.Size = UDim2.new(0.5, 0, 0.5, 0) -- Start small
-    local appearTween = tweenService:Create(popupClone, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        Size = UDim2.new(1, 0, 1, 0) -- Grow to full size
+
+    popupClone.Transparency = 1
+    popupClone.UIScale = Instance.new("UIScale", popupClone)
+    popupClone.UIScale.Scale = 0
+
+    -- Tween for showing the popup
+    local showTween = tweenService:Create(popupClone, TweenInfo.new(0.5, Enum.EasingStyle.Quint), {
+        Transparency = 0
     })
-    appearTween:Play()
-    appearTween.Completed:Wait()
-
-    wait(2) -- Show popup for 2 seconds
-
-    -- Disappearing animation
-    local disappearTween = tweenService:Create(popupClone, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-        Size = UDim2.new(0.5, 0, 0.5, 0), -- Shrink back to small
-        BackgroundTransparency = 1
+    local scaleTween = tweenService:Create(popupClone.UIScale, TweenInfo.new(0.3, Enum.EasingStyle.Back), {
+        Scale = 1
     })
-    disappearTween:Play()
+    showTween:Play()
+    scaleTween:Play()
 
-    for _, descendant in pairs(popupClone:GetDescendants()) do
-        if descendant:IsA("TextLabel") or descendant:IsA("TextButton") then
-            local textTween = tweenService:Create(descendant, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {TextTransparency = 1})
-            textTween:Play()
-        elseif descendant:IsA("ImageLabel") or descendant:IsA("ImageButton") then
-            local imageTween = tweenService:Create(descendant, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {ImageTransparency = 1})
-            imageTween:Play()
-        end
+    -- Message animation
+    if messageLabel then
+        local textTween = tweenService:Create(messageLabel, TweenInfo.new(1, Enum.EasingStyle.Quint), {
+            MaxVisibleGraphemes = #messageLabel.Text
+        })
+        textTween:Play()
     end
 
-    disappearTween.Completed:Wait()
+    wait(4)
+
+    -- Tween for hiding the popup
+    local hideTween = tweenService:Create(popupClone, TweenInfo.new(0.25, Enum.EasingStyle.Quint), {
+        Transparency = 1
+    })
+    local scaleOutTween = tweenService:Create(popupClone.UIScale, TweenInfo.new(0.5, Enum.EasingStyle.Back), {
+        Scale = 0
+    })
+    hideTween:Play()
+    scaleOutTween:Play()
+
+    wait(0.5)
     popupClone:Destroy()
 end
