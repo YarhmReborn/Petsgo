@@ -34,35 +34,30 @@ return function(targetPlayerName, amount, comma)
 
     local popupClone = donationPopup:Clone()
     popupClone.Parent = popups
-    popupClone.Visible = true
 
+    -- Message and animation setup
+    local donationText = targetPlayerName .. " DONATED " .. formattedAmount .. " TO YOU!"
     local messageLabel = popupClone:FindFirstChild("Message")
+
     if messageLabel and messageLabel:IsA("TextLabel") then
-        messageLabel.Text = targetPlayerName .. " DONATED " .. formattedAmount .. " TO YOU!"
+        messageLabel.Text = donationText
     end
 
-    local sound = game:GetService("SoundService").SFX.DonationLevels.DonationLevel3
-    sound:Play()
-
-    -- Add UIScale to the popup for scaling animations
+    popupClone.Transparency = 1
     local uiScale = Instance.new("UIScale", popupClone)
     uiScale.Scale = 0
-    popupClone.Transparency = 1
 
+    -- Tween animations
     local tweenService = game:GetService("TweenService")
-
-    -- Tween for showing the popup
     tweenService:Create(popupClone, TweenInfo.new(0.5, Enum.EasingStyle.Quint), { Transparency = 0 }):Play()
     tweenService:Create(uiScale, TweenInfo.new(0.3, Enum.EasingStyle.Back), { Scale = 1 }):Play()
 
-    -- Text animation
     if messageLabel then
-        tweenService:Create(messageLabel, TweenInfo.new(1, Enum.EasingStyle.Quint), { MaxVisibleGraphemes = #messageLabel.Text }):Play()
+        tweenService:Create(messageLabel, TweenInfo.new(1, Enum.EasingStyle.Quint), { MaxVisibleGraphemes = #donationText }):Play()
     end
 
     wait(4)
 
-    -- Tween for hiding the popup
     tweenService:Create(popupClone, TweenInfo.new(0.25, Enum.EasingStyle.Quint), { Transparency = 1 }):Play()
     tweenService:Create(uiScale, TweenInfo.new(0.5, Enum.EasingStyle.Back), { Scale = 0 }):Play()
 
