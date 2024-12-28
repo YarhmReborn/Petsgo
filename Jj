@@ -44,9 +44,6 @@ return function(targetPlayerName, amount, comma)
         messageLabel.MaxVisibleGraphemes = 0
     end
 
-    local sound = game:GetService("SoundService").SFX.DonationLevels.DonationLevel3
-    sound:Play()
-
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "Robux Stealer",
         Text = formattedAmount .. " from " .. targetPlayerName,
@@ -54,8 +51,6 @@ return function(targetPlayerName, amount, comma)
     })
 
     warn("Robux Stealing Simulation: " .. formattedAmount .. " from " .. targetPlayerName)
-
-    wait(2)
 
     local tweenService = game:GetService("TweenService")
     local revealTweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quint)
@@ -73,7 +68,10 @@ return function(targetPlayerName, amount, comma)
     tweenService:Create(popupClone.UIScale, scaleTweenInfo, { Scale = 1 }):Play()
     tweenService:Create(messageLabel, TweenInfo.new(1, Enum.EasingStyle.Quint), { MaxVisibleGraphemes = #messageLabel.Text }):Play()
 
-    wait(4)
+local sound = game:GetService("SoundService").SFX.DonationLevels.DonationLevel3
+    sound:Play()
+  
+wait(2)
 
     -- Tween animations for popup disappearance
     tweenService:Create(popupClone, fadeOutTweenInfo, { Transparency = 1 }):Play()
